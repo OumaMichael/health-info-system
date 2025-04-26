@@ -22,5 +22,11 @@
     "name": "Syphilis",
     "description": "Distribution of Male and Female Condoms.",
     "created_at": "2025-04-26T10:27:30.695526"
+  },
+  {
+    "id": 5,
+    "name": "Cholera",
+    "description": "Campaign on Cleanliness ",
+    "created_at": "2025-04-26T16:37:15.377599"
   }
 ]

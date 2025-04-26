@@ -4,5 +4,11 @@
     "program_id": 4,
     "enrollment_date": "2025-04-26T15:39:04.088980",
     "status": "active"
+  },
+  {
+    "client_id": 2,
+    "program_id": 3,
+    "enrollment_date": "2025-04-26T16:37:41.683187",
+    "status": "active"
   }
 ]
