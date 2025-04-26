@@ -1,128 +1,165 @@
-// components/RegisterClient.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+"use client"
 
-function RegisterClient() {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    age: '',
-    gender: '',
-    contactInfo: ''
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+import { useState } from "react"
+
+const RegisterClient = ({ setActivePage, onClientRegistered }) => {
+  const [client, setClient] = useState({
+    first_name: "",
+    last_name: "",
+    date_of_birth: "",
+    gender: "",
+    contact_number: "",
+    address: "",
+  })
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(false)
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
+    const { name, value } = e.target
+    setClient((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-    
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    setSuccess(false)
+
     try {
-      const response = await fetch('http://localhost:5000/api/clients', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5000/api/clients", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
-      });
-      
-      const data = await response.json();
-      
+        body: JSON.stringify(client),
+      })
+
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to register client');
+        throw new Error("Failed to register client")
       }
-      
-      // Navigate to the client profile page
-      navigate(`/client/${data.id}`);
+
+      setSuccess(true)
+      if (onClientRegistered) onClientRegistered()
+
+      setClient({
+        first_name: "",
+        last_name: "",
+        date_of_birth: "",
+        gender: "",
+        contact_number: "",
+        address: "",
+      })
+
+      // Redirect to clients list after 2 seconds
+      setTimeout(() => {
+        setActivePage("clients")
+      }, 2000)
     } catch (err) {
-      setError(err.message);
+      console.error(err)
+      setError("Failed to register client. Please try again.")
     } finally {
-      setIsLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Register New Client</h2>
-      
-      {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
-      
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block mb-2">Full Name</label>
+    <div className="p-6 max-w-xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-6">Register New Client</h2>
+
+      {error && <p className="text-red-500 mb-4 p-3 bg-red-900/30 rounded-md">{error}</p>}
+      {success && <p className="text-green-400 mb-4 p-3 bg-green-900/30 rounded-md">Client registered successfully!</p>}
+
+      <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-6 rounded-lg border border-gray-700">
+        <div>
+          <label className="block text-sm mb-1">First Name</label>
           <input
+            name="first_name"
             type="text"
-            name="fullName"
-            value={formData.fullName}
+            placeholder="First Name"
+            className="w-full p-2 border rounded bg-gray-700 text-white border-gray-600 focus:outline-none focus:border-blue-500"
+            value={client.first_name}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
-            placeholder="Enter client's full name"
             required
           />
         </div>
-        
-        <div className="mb-4">
-          <label className="block mb-2">Age</label>
+
+        <div>
+          <label className="block text-sm mb-1">Last Name</label>
           <input
-            type="number"
-            name="age"
-            value={formData.age}
+            name="last_name"
+            type="text"
+            placeholder="Last Name"
+            className="w-full p-2 border rounded bg-gray-700 text-white border-gray-600 focus:outline-none focus:border-blue-500"
+            value={client.last_name}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
-            placeholder="Enter age"
             required
           />
         </div>
-        
-        <div className="mb-4">
-          <label className="block mb-2">Gender</label>
+
+        <div>
+          <label className="block text-sm mb-1">Date of Birth</label>
+          <input
+            name="date_of_birth"
+            type="date"
+            className="w-full p-2 border rounded bg-gray-700 text-white border-gray-600 focus:outline-none focus:border-blue-500"
+            value={client.date_of_birth}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">Gender</label>
           <select
             name="gender"
-            value={formData.gender}
+            className="w-full p-2 border rounded bg-gray-700 text-white border-gray-600 focus:outline-none focus:border-blue-500"
+            value={client.gender}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
             required
           >
-            <option value="">Select gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
           </select>
         </div>
-        
-        <div className="mb-4">
-          <label className="block mb-2">Contact Information</label>
+
+        <div>
+          <label className="block text-sm mb-1">Contact Number</label>
           <input
-            type="text"
-            name="contactInfo"
-            value={formData.contactInfo}
+            name="contact_number"
+            type="tel"
+            placeholder="Contact Number"
+            className="w-full p-2 border rounded bg-gray-700 text-white border-gray-600 focus:outline-none focus:border-blue-500"
+            value={client.contact_number}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
-            placeholder="Phone number or email"
-            required
           />
         </div>
-        
+
+        <div>
+          <label className="block text-sm mb-1">Address</label>
+          <textarea
+            name="address"
+            placeholder="Address"
+            rows="3"
+            className="w-full p-2 border rounded bg-gray-700 text-white border-gray-600 focus:outline-none focus:border-blue-500"
+            value={client.address}
+            onChange={handleChange}
+          ></textarea>
+        </div>
+
         <button
           type="submit"
-          className="w-full bg-black text-white p-2 rounded"
-          disabled={isLoading}
+          className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          disabled={loading}
         >
-          {isLoading ? 'Registering...' : 'Register Client'}
+          {loading ? "Registering..." : "Register Client"}
         </button>
       </form>
     </div>
-  );
+  )
 }
 
-export default RegisterClient;
-
+export default RegisterClient

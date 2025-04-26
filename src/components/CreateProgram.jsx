@@ -1,97 +1,71 @@
-// components/CreateProgram.js
-import React, { useState } from 'react';
+"use client"
 
-function CreateProgram() {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: ''
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+import { useState } from "react"
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
+const CreateProgram = ({ onCreate }) => {
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-    setSuccess(false);
-    
+    e.preventDefault()
+    if (!name.trim()) return
+
+    setLoading(true)
+    setError(null)
+
     try {
-      const response = await fetch('http://localhost:5000/api/programs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to create program');
-      }
-      
-      setSuccess(true);
-      setFormData({ name: '', description: '' });
+      await onCreate({ name, description })
+      setName("")
+      setDescription("")
     } catch (err) {
-      setError(err.message);
+      setError("Failed to create program. Please try again.")
     } finally {
-      setIsLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Create Health Program</h2>
-      
-      {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
-      {success && <div className="bg-green-100 text-green-700 p-3 mb-4 rounded">Program created successfully!</div>}
-      
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block mb-2">Program Name</label>
+    <div className="p-6 max-w-xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-6">Create New Health Program</h2>
+
+      {error && <p className="text-red-500 mb-4 p-3 bg-red-900/30 rounded-md">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-6 rounded-lg border border-gray-700">
+        <div>
+          <label className="block text-sm mb-1">Program Name</label>
           <input
             type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            placeholder="e.g., TB, Malaria, HIV"
+            className="w-full p-2 border rounded bg-gray-700 text-white border-gray-600 focus:outline-none focus:border-blue-500"
+            placeholder="e.g., TB Prevention, Malaria Control, HIV Treatment"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
           />
         </div>
-        
-        <div className="mb-4">
-          <label className="block mb-2">Description</label>
+
+        <div>
+          <label className="block text-sm mb-1">Program Description</label>
           <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            placeholder="Enter program description and details"
-            rows={5}
-            required
+            className="w-full p-2 border rounded bg-gray-700 text-white border-gray-600 focus:outline-none focus:border-blue-500"
+            placeholder="Describe the health program and its objectives..."
+            rows="4"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
-        
+
         <button
           type="submit"
-          className="w-full bg-black text-white p-2 rounded"
-          disabled={isLoading}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+          disabled={loading || !name.trim()}
         >
-          {isLoading ? 'Creating...' : 'Create Program'}
+          {loading ? "Creating..." : "Create Program"}
         </button>
       </form>
     </div>
-  );
+  )
 }
 
-export default CreateProgram;
+export default CreateProgram
