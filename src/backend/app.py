@@ -1,154 +1,133 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from datetime import datetime
-import uuid
 import os
 import json
+from datetime import datetime
+from flask import Flask, jsonify, request, abort
+from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+# ─── Setup ──────────────────────────────────────────────────────────────────────
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, 'data')
+CLIENTS_FILE    = os.path.join(DATA_DIR, 'clients.json')
+PROGRAMS_FILE   = os.path.join(DATA_DIR, 'programs.json')
+ENROLLMENTS_FILE= os.path.join(DATA_DIR, 'enrollments.json')
 
-# Initialize data storage (in a real app, use a proper database)
-DATA_DIR = 'data'
 os.makedirs(DATA_DIR, exist_ok=True)
+for path in (CLIENTS_FILE, PROGRAMS_FILE, ENROLLMENTS_FILE):
+    if not os.path.exists(path):
+        with open(path,'w') as f:
+            json.dump([], f, indent=2)
 
-CLIENTS_FILE = os.path.join(DATA_DIR, 'clients.json')
-PROGRAMS_FILE = os.path.join(DATA_DIR, 'programs.json')
-ENROLLMENTS_FILE = os.path.join(DATA_DIR, 'enrollments.json')
+def load_data(path):
+    with open(path,'r') as f:
+        return json.load(f)
 
-# Initialize data files if they don't exist
-def init_data_files():
-    if not os.path.exists(CLIENTS_FILE):
-        with open(CLIENTS_FILE, 'w') as f:
-            json.dump([], f)
-    
-    if not os.path.exists(PROGRAMS_FILE):
-        with open(PROGRAMS_FILE, 'w') as f:
-            json.dump([], f)
-            
-    if not os.path.exists(ENROLLMENTS_FILE):
-        with open(ENROLLMENTS_FILE, 'w') as f:
-            json.dump([], f)
-
-# Helper functions for data operations
-def read_data(file_path):
-    try:
-        with open(file_path, 'r') as f:
-            return json.load(f)
-    except:
-        return []
-
-def write_data(file_path, data):
-    with open(file_path, 'w') as f:
+def save_data(path, data):
+    with open(path,'w') as f:
         json.dump(data, f, indent=2)
 
-# Initialize data files
-init_data_files()
+app = Flask(__name__)
+# ← This single line opens CORS for *all* origins on /api/*
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# API Routes
-@app.route('/api/clients', methods=['GET', 'POST'])
-def handle_clients():
-    if request.method == 'GET':
-        clients = read_data(CLIENTS_FILE)
-        return jsonify(clients)
-    
-    elif request.method == 'POST':
-        new_client = request.json
-        new_client['id'] = str(uuid.uuid4())
-        
-        clients = read_data(CLIENTS_FILE)
-        clients.append(new_client)
-        write_data(CLIENTS_FILE, clients)
-        
-        return jsonify({'id': new_client['id'], 'message': 'Client registered successfully'}), 201
+# ─── Clients ────────────────────────────────────────────────────────────────────
+@app.route('/api/clients', methods=['GET'])
+def get_clients():
+    clients = load_data(CLIENTS_FILE)
+    q = request.args.get('search', '').strip().lower()
+    if q:
+        clients = [c for c in clients
+                   if q in c['first_name'].lower()
+                   or q in c['last_name'].lower()]
+    return jsonify(clients)
 
-@app.route('/api/clients/<client_id>', methods=['GET'])
+@app.route('/api/clients/<int:client_id>', methods=['GET'])
 def get_client(client_id):
-    clients = read_data(CLIENTS_FILE)
-    client = next((c for c in clients if c['id'] == client_id), None)
-    
-    if client:
-        return jsonify(client)
-    else:
-        return jsonify({'message': 'Client not found'}), 404
-
-@app.route('/api/programs', methods=['GET', 'POST'])
-def handle_programs():
-    if request.method == 'GET':
-        programs = read_data(PROGRAMS_FILE)
-        return jsonify(programs)
-    
-    elif request.method == 'POST':
-        new_program = request.json
-        new_program['id'] = str(uuid.uuid4())
-        
-        programs = read_data(PROGRAMS_FILE)
-        programs.append(new_program)
-        write_data(PROGRAMS_FILE, programs)
-        
-        return jsonify({'id': new_program['id'], 'message': 'Program created successfully'}), 201
-
-@app.route('/api/enrollments', methods=['POST'])
-def create_enrollment():
-    enrollment_data = request.json
-    client_id = enrollment_data.get('clientId')
-    program_id = enrollment_data.get('programId')
-    
-    # Validate client and program exist
-    clients = read_data(CLIENTS_FILE)
-    programs = read_data(PROGRAMS_FILE)
-    
-    client = next((c for c in clients if c['id'] == client_id), None)
-    program = next((p for p in programs if p['id'] == program_id), None)
-    
+    clients = load_data(CLIENTS_FILE)
+    client = next((c for c in clients if c['id']==client_id), None)
     if not client:
-        return jsonify({'message': 'Client not found'}), 404
-    if not program:
-        return jsonify({'message': 'Program not found'}), 404
-    
-    # Create enrollment record
-    new_enrollment = {
-        'id': str(uuid.uuid4()),
-        'clientId': client_id,
-        'programId': program_id,
-        'enrollmentDate': datetime.now().isoformat()
+        abort(404, 'Client not found')
+    programs   = load_data(PROGRAMS_FILE)
+    enrolls    = load_data(ENROLLMENTS_FILE)
+    client['enrolled_programs'] = [
+        {
+          'id': p['id'],
+          'name': p['name'],
+          'description': p.get('description',''),
+          'enrollment_date': e['enrollment_date'],
+          'status': e.get('status','active')
+        }
+        for e in enrolls if e['client_id']==client_id
+        for p in programs  if p['id']==e['program_id']
+    ]
+    return jsonify(client)
+
+@app.route('/api/clients', methods=['POST'])
+def create_client():
+    data = request.get_json() or {}
+    for field in ('first_name','last_name','date_of_birth','gender'):
+        if not data.get(field):
+            abort(400, f"Missing {field}")
+    clients = load_data(CLIENTS_FILE)
+    new_id = max((c['id'] for c in clients), default=0) + 1
+    new_client = {
+        'id': new_id,
+        'first_name': data['first_name'],
+        'last_name': data['last_name'],
+        'date_of_birth': data['date_of_birth'],
+        'gender': data['gender'],
+        'contact_number': data.get('contact_number',''),
+        'address': data.get('address',''),
+        'created_at': datetime.utcnow().isoformat()
     }
-    
-    enrollments = read_data(ENROLLMENTS_FILE)
-    enrollments.append(new_enrollment)
-    write_data(ENROLLMENTS_FILE, enrollments)
-    
-    return jsonify({'id': new_enrollment['id'], 'message': 'Client enrolled successfully'}), 201
+    clients.append(new_client)
+    save_data(CLIENTS_FILE, clients)
+    return jsonify({'id': new_id}), 201
 
-@app.route('/api/clients/<client_id>/programs', methods=['GET'])
-def get_client_programs(client_id):
-    # Validate client exists
-    clients = read_data(CLIENTS_FILE)
-    client = next((c for c in clients if c['id'] == client_id), None)
-    
-    if not client:
-        return jsonify({'message': 'Client not found'}), 404
-    
-    # Get enrollments for this client
-    enrollments = read_data(ENROLLMENTS_FILE)
-    client_enrollments = [e for e in enrollments if e['clientId'] == client_id]
-    
-    # Get program details for each enrollment
-    programs = read_data(PROGRAMS_FILE)
-    
-    result = []
-    for enrollment in client_enrollments:
-        program = next((p for p in programs if p['id'] == enrollment['programId']), None)
-        if program:
-            result.append({
-                'id': enrollment['id'],
-                'programId': program['id'],
-                'programName': program['name'],
-                'programDescription': program['description'],
-                'enrollmentDate': enrollment['enrollmentDate']
-            })
-    
-    return jsonify(result)
+# ─── Programs ───────────────────────────────────────────────────────────────────
+@app.route('/api/programs', methods=['GET'])
+def get_programs():
+    return jsonify(load_data(PROGRAMS_FILE))
+
+@app.route('/api/programs', methods=['POST'])
+def create_program():
+    data = request.get_json() or {}
+    if not data.get('name'):
+        abort(400, 'Program name required')
+    programs = load_data(PROGRAMS_FILE)
+    new_id   = max((p['id'] for p in programs), default=0) + 1
+    prog = {
+        'id': new_id,
+        'name': data['name'],
+        'description': data.get('description',''),
+        'created_at': datetime.utcnow().isoformat()
+    }
+    programs.append(prog)
+    save_data(PROGRAMS_FILE, programs)
+    return jsonify(prog), 201
+
+# ─── Enroll ────────────────────────────────────────────────────────────────────
+@app.route('/api/clients/<int:client_id>/enroll', methods=['POST'])
+def enroll_client(client_id):
+    data = request.get_json() or {}
+    pid  = data.get('program_id')
+    if not pid:
+        abort(400, 'program_id required')
+    if not any(c['id']==client_id for c in load_data(CLIENTS_FILE)):
+        abort(404, 'Client not found')
+    if not any(p['id']==pid for p in load_data(PROGRAMS_FILE)):
+        abort(404, 'Program not found')
+    enrolls = load_data(ENROLLMENTS_FILE)
+    if any(e['client_id']==client_id and e['program_id']==pid for e in enrolls):
+        abort(400, 'Already enrolled')
+    new_e = {
+        'client_id': client_id,
+        'program_id': pid,
+        'enrollment_date': datetime.utcnow().isoformat(),
+        'status': 'active'
+    }
+    enrolls.append(new_e)
+    save_data(ENROLLMENTS_FILE, enrolls)
+    return jsonify(new_e), 201
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)

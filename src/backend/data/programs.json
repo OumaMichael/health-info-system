@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "HIV Care",
+    "description": "Comprehensive HIV testing and treatment program",
+    "created_at": "2025-03-20T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "name": "TB Control",
+    "description": "Tuberculosis screening and DOTS therapy",
+    "created_at": "2025-03-22T11:45:00Z"
+  },
+  {
+    "id": 3,
+    "name": "Malaria Prevention",
+    "description": "Distribution of bed nets and antimalarial drugs",
+    "created_at": "2025-03-25T09:20:00Z"
+  },
+  {
+    "id": 4,
+    "name": "Syphilis",
+    "description": "Distribution of Male and Female Condoms.",
+    "created_at": "2025-04-26T10:27:30.695526"
+  }
+]

@@ -1,31 +1,22 @@
-{
-    "clients": [
-      {
-        "id": "3a7e4567-e89b-12d3-a456-426614174000",
-        "firstName": "John",
-        "lastName": "Doe",
-        "dateOfBirth": "1985-06-15",
-        "gender": "Male",
-        "contactNumber": "555-123-4567",
-        "address": "123 Main St, Anytown, USA",
-        "created_at": "2023-05-15T14:30:45.123456"
-      }
-    ],
-    "programs": [
-      {
-        "id": "7b8e9f10-11c2-13d4-a456-426614174000",
-        "name": "Diabetes Management",
-        "description": "Program for managing diabetes through education and support",
-        "duration": "12 weeks",
-        "created_at": "2023-05-10T09:15:22.654321"
-      }
-    ],
-    "enrollments": [
-      {
-        "id": "a1b2c3d4-e5f6-7890-a123-426614174000",
-        "client_id": "3a7e4567-e89b-12d3-a456-426614174000",
-        "program_id": "7b8e9f10-11c2-13d4-a456-426614174000",
-        "enrollment_date": "2023-05-16T10:45:33.987654"
-      }
-    ]
+[
+  {
+    "id": 1,
+    "first_name": "Marken",
+    "last_name": "Lydia",
+    "date_of_birth": "1999-08-19",
+    "gender": "Male",
+    "contact_number": "8578798",
+    "address": "Ngara",
+    "created_at": "2025-04-26T15:38:17.951492"
+  },
+  {
+    "id": 2,
+    "first_name": "Veroline",
+    "last_name": "Mike",
+    "date_of_birth": "2015-02-11",
+    "gender": "Female",
+    "contact_number": "85787982",
+    "address": "CBD",
+    "created_at": "2025-04-26T16:34:46.782180"
   }
+]
