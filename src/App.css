@@ -1,0 +1,197 @@
+/* App.css */
+
+/* Container styling */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Main header styling */
+h1.text-3xl {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+/* Navigation bar styling */
+nav {
+  margin-bottom: 2rem;
+}
+
+nav .flex {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+nav a {
+  background-color: #f3f4f6;
+  color: #333;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+nav a:hover {
+  background-color: #e5e7eb;
+}
+
+/* Form styling */
+form {
+  width: 100%;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+}
+
+textarea {
+  min-height: 100px;
+}
+
+/* Button styling */
+button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #18181b;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #27272a;
+}
+
+button:disabled {
+  background-color: #71717a;
+  cursor: not-allowed;
+}
+
+/* Gray button styling (for Enroll Client) */
+button.bg-gray-500 {
+  background-color: #6b7280;
+}
+
+button.bg-gray-500:hover {
+  background-color: #4b5563;
+}
+
+/* Alert styling */
+.bg-red-100 {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.bg-green-100 {
+  background-color: #d1fae5;
+  color: #047857;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+/* Card/container styling */
+.max-w-md {
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+.bg-gray-50 {
+  background-color: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #f3f4f6;
+  text-align: left;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+}
+
+td {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+.text-blue-600:hover {
+  text-decoration: underline;
+}
+
+/* Client profile styling */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.text-gray-600 {
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
+
+/* API endpoint styling */
+.font-mono {
+  font-family: monospace;
+  background-color: #f3f4f6;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  overflow-x: auto;
+}
+
+/* Search box styling */
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+/* Message when no data found */
+.text-center {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* Override for the enrollment gray button */
+.enroll-button {
+  background-color: #6b7280;
+}
+
+.enroll-button:hover {
+  background-color: #4b5563;
+}
