@@ -36,7 +36,7 @@ health-information-system/
 1. Create a virtual environment and activate it:
 
    ```bash
-   cd backend
+   cd src/backend
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
@@ -60,7 +60,7 @@ health-information-system/
 1. Navigate to the frontend directory:
 
    ```bash
-   cd frontend
+   cd health-info-system
    ```
 
 2. Install dependencies:

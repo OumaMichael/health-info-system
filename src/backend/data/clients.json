@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "first_name": "Marken",
-    "last_name": "Lydia",
+    "first_name": "Satan",
+    "last_name": "Dave",
     "date_of_birth": "1999-08-19",
     "gender": "Male",
     "contact_number": "8578798",
@@ -11,8 +11,8 @@
   },
   {
     "id": 2,
-    "first_name": "Veroline",
-    "last_name": "Mike",
+    "first_name": "Winnie",
+    "last_name": "Wonder",
     "date_of_birth": "2015-02-11",
     "gender": "Female",
     "contact_number": "85787982",
