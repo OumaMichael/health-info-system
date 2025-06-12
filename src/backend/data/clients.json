@@ -18,5 +18,15 @@
     "contact_number": "85787982",
     "address": "CBD",
     "created_at": "2025-04-26T16:34:46.782180"
+  },
+  {
+    "id": 3,
+    "first_name": "Elvine",
+    "last_name": "Otieno",
+    "date_of_birth": "2002-02-14",
+    "gender": "Male",
+    "contact_number": "12345678",
+    "address": "Juja",
+    "created_at": "2025-06-12T20:35:19.067135"
   }
 ]
