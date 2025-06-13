@@ -1,7 +1,17 @@
-
-
 [build]
-builder = "heroku/buildpacks:20"
+# Use Python 3.10 (or adjust to your needs)
+env = { PYTHON_VERSION = "3.10" }
 
 [deploy]
-start = "gunicorn app:app"
+# Start the Flask app with gunicorn
+start = "gunicorn app:app --bind 0.0.0.0:$PORT"
+# Use the default port for Railway
+port = "$PORT"
+
+[install]
+# Install dependencies from requirements.txt
+command = "pip install -r requirements.txt"
+
+[web]
+# Define the web service
+command = "gunicorn app:app --bind 0.0.0.0:$PORT"
