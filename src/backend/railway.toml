@@ -1,8 +1,7 @@
+
+
 [build]
 builder = "heroku/buildpacks:20"
 
 [deploy]
 start = "gunicorn app:app"
-
-[env]
-PYTHON_VERSION = "3.10"
