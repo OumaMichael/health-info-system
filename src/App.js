@@ -12,7 +12,7 @@ import RegisterClient from "./components/RegisterClient"
 import ClientProfile from "./components/ClientProfile"
 import EnrollClient from "./components/EnrollClient"
 
-const API_URL = "http://localhost:5000/api"
+const API_URL = "https://health-info-system-tau.vercel.app/api"
 
 function App() {
   const [activePage, setActivePage] = useState("dashboard")
